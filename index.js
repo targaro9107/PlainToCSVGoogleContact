@@ -56,6 +56,11 @@ function lineCSV(object) {
 
 }
 
+//Remove space "667 2232 990" to "6672232990"
+function removeSpace(cadena) {
+    return cadena.replace(/\s/g, '')
+}
+
 function parseNameAndCel(array, index) {
     try {
 
@@ -63,6 +68,7 @@ function parseNameAndCel(array, index) {
 
         index = consumirTab(array, index)
         var cel = array[index];
+        cel = removeSpace(cel)
         //verificar si es un numero de celular
         if (parseInt(cel) == NaN)
             throw new Error('No es un numero de celular');
