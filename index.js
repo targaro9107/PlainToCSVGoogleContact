@@ -50,7 +50,7 @@ function limpiarCadena(cadena) {
 }
 function lineCSV(object) {
     if (object.cel.length > 0)
-        return `${object.name},,,,,,,${object.name},,,,,,,,,,,,,,,,,* myContacts,Mobile,${object.cel},,,,,,,,,,,,`
+        return `${object.name},,,,,,,${object.name},,,,,,,,,,,,,,,,,,,,,* myContacts,Mobile,${object.cel},,,,,,,,`
     else
         return ''
 
