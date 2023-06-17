@@ -80,7 +80,11 @@ function parseNameAndCel(array, index) {
             throw new Error('No es un nombre valido');
         const nextIndex = index + 2;
         name = limpiarCadena(name)
+        name = name.replace("~","")   
         cel = limpiarCadena(cel)
+
+        name = "Cliente "+name + cel.substring(cel.length-2,cel.length)
+        
         return { name, cel, nextIndex };
 
     } catch (error) {
