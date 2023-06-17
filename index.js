@@ -14,6 +14,8 @@ const fs = require('fs');
 //Grisel,,,,,,,Grisel,,,,,,,,,,,,,,,,,* myContacts,Mobile,54822000,,,,,,,,,,,,
 //Betty Talla S,,,,,,,Betty Talla S,,,,,,,,,,,,,,,,,* myContacts,Mobile,53491811,,,,,,,,,,,,
 //Idanneris,,,,,,,Idanneris,,,,,,,,,,,,,,,,,* myContacts,Mobile,53992116,,,,,,,,,,,,
+const prefijoNombre="Cliente"
+const SufijoNombreAutoNum=2 //Establecer en 0 lo desabilita
 
 function plainToCSV(file) {
     var array = fs.readFileSync(file).toString().split("\n");
@@ -30,6 +32,8 @@ function plainToCSV(file) {
         console.log(line)
         csv += line + '\n'
     }
+
+    console.log("\n\n ************** LISTO **************")
 
     fs.writeFileSync('contacts.csv', csv);
 }
@@ -83,7 +87,7 @@ function parseNameAndCel(array, index) {
         name = name.replace("~","")   
         cel = limpiarCadena(cel)
 
-        name = "Cliente "+name + cel.substring(cel.length-2,cel.length)
+        name = prefijoNombre+" "+name + cel.substring(cel.length-SufijoNombreAutoNum,cel.length)
         
         return { name, cel, nextIndex };
 
