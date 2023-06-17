@@ -15,7 +15,7 @@ const fs = require('fs');
 //Betty Talla S,,,,,,,Betty Talla S,,,,,,,,,,,,,,,,,* myContacts,Mobile,53491811,,,,,,,,,,,,
 //Idanneris,,,,,,,Idanneris,,,,,,,,,,,,,,,,,* myContacts,Mobile,53992116,,,,,,,,,,,,
 const prefijoNombre="Cliente"
-const SufijoNombreAutoNum=2 //Establecer en 0 lo desabilita
+const SufijoNombreAutoNum=3 //Establecer en 0 lo desabilita
 
 function plainToCSV(file) {
     var array = fs.readFileSync(file).toString().split("\n");
