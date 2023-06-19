@@ -28,7 +28,7 @@ function plainToCSV(file) {
         const index=result?result.nextIndex:0
         result = parseNameAndCel(array, index)
         const exist=mapContacts[result.cel]
-        if (!exist && result.cel.length >= 8) {
+        if (!exist && result.cel.length >= 6) {
             const line = lineCSV(result)
             console.log(line)
             csv += line + '\n'
@@ -70,20 +70,22 @@ function lineCSV(object) {
 }
 
 //Remove space "667 2232 990" to "6672232990"
-function removeSpace(cadena) {
-    return cadena.replace(/\s/g, '')
+function cleanCel(cadena) {
+    return cadena.replace(/[\s()\-]+/g, '')
 }
 
 function parseNameAndCel(array, index) {
     try {
 
+        const regex=/^\+?\d{0,3}\d{5,8}$/
+
         //correr index cuando se un espacio o tabulador
 
         index = consumirTab(array, index)
         var cel = array[index];
-        cel = removeSpace(cel)
+        cel = cleanCel(cel)
         //verificar si es un numero de celular
-        if (parseInt(cel) == NaN)
+        if (!regex.test(cel))
             throw new Error('No es un numero de celular');
 
         index = consumirTab(array, index)
