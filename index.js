@@ -28,7 +28,7 @@ function plainToCSV(file) {
         const index=result?result.nextIndex:0
         result = parseNameAndCel(array, index)
         const exist=mapContacts[result.cel]
-        if (!exist && result.cel.length > 0) {
+        if (!exist && result.cel.length > 8) {
             const line = lineCSV(result)
             console.log(line)
             csv += line + '\n'
