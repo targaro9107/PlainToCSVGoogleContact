@@ -14,29 +14,35 @@ const fs = require('fs');
 //Grisel,,,,,,,Grisel,,,,,,,,,,,,,,,,,* myContacts,Mobile,54822000,,,,,,,,,,,,
 //Betty Talla S,,,,,,,Betty Talla S,,,,,,,,,,,,,,,,,* myContacts,Mobile,53491811,,,,,,,,,,,,
 //Idanneris,,,,,,,Idanneris,,,,,,,,,,,,,,,,,* myContacts,Mobile,53992116,,,,,,,,,,,,
-const prefijoNombre="Cliente"
-const SufijoNombreAutoNum=3 //Establecer en 0 lo desabilita
+const prefijoNombre = "Cliente"
+const SufijoNombreAutoNum = 3 //Establecer en 0 lo desabilita
+
+const mapContacts = {}
 
 
-
-let total=0
 function plainToCSV(file) {
     var array = fs.readFileSync(file).toString().split("\n");
     var csv = 'Name,Given Name,Additional Name,Family Name,Yomi Name,Given Name Yomi,Additional Name Yomi,Family Name Yomi,Name Prefix,Name Suffix,Initials,Nickname,Short Name,Maiden Name,Birthday,Gender,Location,Billing Information,Directory Server,Mileage,Occupation,Hobby,Sensitivity,Priority,Subject,Notes,Language,Photo,Group Membership,Phone 1 - Type,Phone 1 - Value,Organization 1 - Type,Organization 1 - Name,Organization 1 - Yomi Name,Organization 1 - Title,Organization 1 - Department,Organization 1 - Symbol,Organization 1 - Location,Organization 1 - Job Description\n';
+    let result=undefined
+    do {
+        const index=result?result.nextIndex:0
+        result = parseNameAndCel(array, index)
+        const exist=mapContacts[result.cel]
+        if (!exist && result.cel.length > 0) {
+            const line = lineCSV(result)
+            console.log(line)
+            csv += line + '\n'
 
-    let result = parseNameAndCel(array, 0)
-    const line = lineCSV(result)
-    console.log(line)
-    csv += line + '\n'
-    while (result.nextIndex < array.length) {
-        result = parseNameAndCel(array, result.nextIndex)
-        
-        const line = lineCSV(result)
-        console.log(line)
-        csv += line + '\n'
-    }
+            mapContacts[result.cel]=true
+            
+        }
 
-    console.log(`\n\n ************** ${total} CONTACTOS LISTOS **************`)
+
+
+    } while (result.nextIndex < array.length)
+
+
+    console.log(`\n\n ************** ${Object.keys(mapContacts).length} CONTACTOS LISTOS **************`)
 
     fs.writeFileSync('contacts.csv', csv);
 }
@@ -87,11 +93,13 @@ function parseNameAndCel(array, index) {
             throw new Error('No es un nombre valido');
         const nextIndex = index + 2;
         name = limpiarCadena(name)
-        name = name.replace("~","")   
+        name = name.replace("~", "")
         cel = limpiarCadena(cel)
 
-        name = prefijoNombre+" "+name + cel.substring(cel.length-SufijoNombreAutoNum,cel.length)
-        total++
+        name = prefijoNombre + " " + name + cel.substring(cel.length - SufijoNombreAutoNum, cel.length)
+        
+
+
         return { name, cel, nextIndex };
 
     } catch (error) {
