@@ -1,9 +1,9 @@
 const fs = require('fs');
-//Archivo de entrada de texto Plano de contactos
+//Archivo de entrada de texto Plano de contactos, si tiene un * es q ya esta en un grupo de evamodas y no se agrega a mapContactsParaGrupos
 // 54822000
 // Grisel
 
-// 53491811
+// 53491811*
 // Betty Talla S
 
 // 53992116
@@ -19,22 +19,24 @@ const SufijoNombreAutoNum = 3 //Establecer en 0 lo desabilita
 
 const mapContacts = {}
 
+const mapContactsParaGrupos = {}
+
 
 function plainToCSV(file) {
     var array = fs.readFileSync(file).toString().split("\n");
     var csv = 'Name,Given Name,Additional Name,Family Name,Yomi Name,Given Name Yomi,Additional Name Yomi,Family Name Yomi,Name Prefix,Name Suffix,Initials,Nickname,Short Name,Maiden Name,Birthday,Gender,Location,Billing Information,Directory Server,Mileage,Occupation,Hobby,Sensitivity,Priority,Subject,Notes,Language,Photo,Group Membership,Phone 1 - Type,Phone 1 - Value,Organization 1 - Type,Organization 1 - Name,Organization 1 - Yomi Name,Organization 1 - Title,Organization 1 - Department,Organization 1 - Symbol,Organization 1 - Location,Organization 1 - Job Description\n';
-    let result=undefined
+    let result = undefined
     do {
-        const index=result?result.nextIndex:0
+        const index = result ? result.nextIndex : 0
         result = parseNameAndCel(array, index)
-        const exist=mapContacts[result.cel]
+        const exist = mapContacts[result.cel]
         if (!exist && result.cel.length >= 6) {
             const line = lineCSV(result)
             console.log(line)
             csv += line + '\n'
 
-            mapContacts[result.cel]=true
-            
+            mapContacts[result.cel] = true
+
         }
 
 
@@ -77,13 +79,29 @@ function cleanCel(cadena) {
 function parseNameAndCel(array, index) {
     try {
 
-        const regex=/^\+?\d{0,3}\d{5,8}$/
+        const regex = /^\+?\d{0,3}\d{5,8}$/
 
         //correr index cuando se un espacio o tabulador
 
         index = consumirTab(array, index)
         var cel = array[index];
         cel = cleanCel(cel)
+
+        let newCel = cel.replaceAll('*', '')
+
+        if (newCel.length === cel.length) {
+            let numero = newCel
+            if (numero.substring(0, 3) !== '+53' || numero.length === 8)
+                if (parseInt(numero).toString().length === numero.length)
+                    numero = '+53' + numero
+
+            if (numero.substring(0, 3) === '+53' )
+                mapContactsParaGrupos[numero] = true
+
+        }
+
+        cel = newCel
+
         //verificar si es un numero de celular
         if (!regex.test(cel))
             throw new Error('No es un numero de celular');
@@ -99,7 +117,7 @@ function parseNameAndCel(array, index) {
         cel = limpiarCadena(cel)
 
         name = prefijoNombre + " " + name + cel.substring(cel.length - SufijoNombreAutoNum, cel.length)
-        
+
 
 
         return { name, cel, nextIndex };
@@ -125,5 +143,33 @@ function consumirTab(array, index) {
 
 }
 
+function paraGrupos() {
+    const path = 'store.json'
+    const exist = fs.existsSync(path)
+    let mapNumeros = {}
+    try {
+        if (exist)
+            mapNumeros = JSON.parse(fs.readFileSync(pathNameStore));
+
+    } catch (error) {
+
+    }
+
+    Object.keys(mapContactsParaGrupos).forEach(key => {
+        mapNumeros[key]=true
+        
+    })
+
+    const json = JSON.stringify(mapNumeros);
+    const writeOptions = { flag: 'w' };
+    fs.writeFileSync(path, json, writeOptions);
+
+}
+
 plainToCSV("plain.txt")
+
+paraGrupos()
+
+
+
 
