@@ -14,7 +14,7 @@ const fs = require('fs');
 //Grisel,,,,,,,Grisel,,,,,,,,,,,,,,,,,* myContacts,Mobile,54822000,,,,,,,,,,,,
 //Betty Talla S,,,,,,,Betty Talla S,,,,,,,,,,,,,,,,,* myContacts,Mobile,53491811,,,,,,,,,,,,
 //Idanneris,,,,,,,Idanneris,,,,,,,,,,,,,,,,,* myContacts,Mobile,53992116,,,,,,,,,,,,
-const prefijoNombre = "Cliente"
+const prefijoNombre = "Client"
 const SufijoNombreAutoNum = 3 //Establecer en 0 lo desabilita
 
 const mapContacts = {}
@@ -85,6 +85,7 @@ function parseNameAndCel(array, index) {
 
         index = consumirTab(array, index)
         var cel = array[index];
+
         cel = cleanCel(cel)
 
         let newCel = cel.replaceAll('*', '')
@@ -95,7 +96,7 @@ function parseNameAndCel(array, index) {
                 if (parseInt(numero).toString().length === numero.length)
                     numero = '+53' + numero
 
-            if (numero.substring(0, 3) === '+53' )
+            if (numero.substring(0, 3) === '+53')
                 mapContactsParaGrupos[numero] = true
 
         }
@@ -106,26 +107,55 @@ function parseNameAndCel(array, index) {
         if (!regex.test(cel))
             throw new Error('No es un numero de celular');
 
-        index = consumirTab(array, index)
-        var name = array[index + 1];
-        const p = parseInt(name)
-        if (name.length == 0 || p == NaN)
-            throw new Error('No es un nombre valido');
-        const nextIndex = index + 2;
-        name = limpiarCadena(name)
-        name = name.replace("~", "")
-        cel = limpiarCadena(cel)
+        let indexTmp = consumirTab(array, index+1)
+        var name = array[indexTmp];
 
-        name = prefijoNombre + " " + name + cel.substring(cel.length - SufijoNombreAutoNum, cel.length)
+        const comp=cleanFull(name)
+
+        if (!(isNumber(comp) && name.length>=8)) {
+
+            const p = parseInt(name)
+            if (name.length == 0 || p == NaN)
+                throw new Error('No es un nombre valido');
+            
+            name = limpiarCadena(name)
+            name = name.replace("~", "")
+            cel = limpiarCadena(cel)
+
+            name = prefijoNombre + " " + name + cel.substring(cel.length - SufijoNombreAutoNum, cel.length)
+            
+            return { name: name, cel: cel, nextIndex: indexTmp+1 };
+
+        }else {
+
+            const nextIndex = index + 1;
+            name= prefijoNombre+ " " + cel
+            return { name, cel, nextIndex };
+
+
+        }
 
 
 
-        return { name, cel, nextIndex };
+
+
 
     } catch (error) {
         return { name: '', cel: '', nextIndex: index + 1 };
 
     }
+}
+
+function cleanFull(cel) {
+    let resp=cel.replace(/\s/g, '');
+    resp=resp.replaceAll('*', '')
+    return resp;
+
+}
+
+function isNumber(text) {
+    const regex = /^[+-]?\d+$/;
+    return regex.test(text);
 }
 
 function consumirTab(array, index) {
@@ -156,8 +186,8 @@ function paraGrupos() {
     }
 
     Object.keys(mapContactsParaGrupos).forEach(key => {
-        mapNumeros[key]=true
-        
+        mapNumeros[key] = true
+
     })
 
     const json = JSON.stringify(mapNumeros);
