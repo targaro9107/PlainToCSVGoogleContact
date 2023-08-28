@@ -73,13 +73,22 @@ function lineCSV(object) {
 
 //Remove space "667 2232 990" to "6672232990"
 function cleanCel(cadena) {
-    return cadena.replace(/[\s()\-]+/g, '')
+    let result=cadena.replace(/[\s()\-]+/g, '')
+    return result
+}
+
+function cleanFull(cel) {
+    let resp=cleanCel(cel)
+    resp=resp.replaceAll('*', '')
+    resp=resp.replaceAll('+', '')
+    return resp;
+
 }
 
 function parseNameAndCel(array, index) {
     try {
 
-        const regex = /^\+?\d{0,3}\d{5,8}$/
+        const regex = /^\+?\d{0,3}\d{5,10}$/
 
         //correr index cuando se un espacio o tabulador
 
@@ -92,7 +101,7 @@ function parseNameAndCel(array, index) {
 
         if (newCel.length === cel.length) {
             let numero = newCel
-            if (numero.substring(0, 3) !== '+53' || numero.length === 8)
+            if (numero.substring(0, 3) !== '+53' && numero.length === 8)
                 if (parseInt(numero).toString().length === numero.length)
                     numero = '+53' + numero
 
@@ -146,12 +155,7 @@ function parseNameAndCel(array, index) {
     }
 }
 
-function cleanFull(cel) {
-    let resp=cel.replace(/\s/g, '');
-    resp=resp.replaceAll('*', '')
-    return resp;
 
-}
 
 function isNumber(text) {
     const regex = /^[+-]?\d+$/;
@@ -179,7 +183,7 @@ function paraGrupos() {
     let mapNumeros = {}
     try {
         if (exist)
-            mapNumeros = JSON.parse(fs.readFileSync(pathNameStore));
+            mapNumeros = JSON.parse(fs.readFileSync(path));
 
     } catch (error) {
 
