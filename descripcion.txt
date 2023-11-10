@@ -1,0 +1,2 @@
+Este programa coje los numeros de cel que estan en plain.text
+y los exporta a contacts.csv y guarda en store.json excepto los q tengan *

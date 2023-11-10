@@ -1,2 +1,3 @@
 *.csv
-*.txt
+plain.txt
+store.json
